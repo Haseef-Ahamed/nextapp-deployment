@@ -1,0 +1,27 @@
+# ML model files — too large and proprietary
+*.joblib
+*.pkl
+*.h5
+*.pt
+
+# Environment secrets
+.env
+*.pem
+
+# Python
+__pycache__/
+*.pyc
+.python-version
+uv.lock
+
+# Node
+node_modules/
+package-lock.json
+
+# Mac garbage
+__MACOSX/
+.DS_Store
+
+# Notebooks (company data)
+notebooks/
+*.ipynb

@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: NEXTSTEP
+      MYSQL_USER: nextstep
+      MYSQL_PASSWORD: nextstep123
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./NextStepFullsystemUpdated-main/Backenddd/init-database.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./NextStepFullsystemUpdated-main/Backenddd
+    container_name: backend
+    ports:
+      - "5000:5000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+    environment:
+      PORT: 5000
+      DB_HOST: mysql
+      DB_USER: nextstep
+      DB_PASSWORD: nextstep123
+      DB_NAME: NEXTSTEP
+      JWT_SECRET: nextstep_jwt_secret_2024
+      OPENAI_API_KEY: your_openai_key_here
+
+  ml:
+    build: ./NextStepFullsystemUpdated-main/MLPART
+    container_name: ml
+    ports:
+      - "5002:5002"
+    restart: unless-stopped
+
+  frontend:
+    build: ./NextStepFullsystemUpdated-main/Frontendd
+    container_name: frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
